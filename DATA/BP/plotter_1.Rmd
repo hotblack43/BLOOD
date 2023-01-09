@@ -1,0 +1,118 @@
+---
+title: "Plot Weight and Blood-pressure"
+output: 
+  pdf_document: 
+    fig_height: 9
+---
+
+# Setups
+```{r}
+rm(list=ls())
+library("readxl")
+library(varhandle)
+library(lubridate)
+library(MASS)
+library(gam)
+library(lomb)
+library(extRemes)
+library(oce)
+library(TideHarmonics)
+
+```
+
+# Notes
+May have to first convert the xls files to csv with e.g. "ssconvert pressure.xls pressure.csv"
+
+# get Weight data
+```{r}
+weight <- read.csv( "~/WORKSHOP/BP/DATA/weight.csv",header=TRUE,)
+weight <- unfactor(weight)
+weight$Weight <- as.numeric(gsub("[a-z\\()]","",weight$Weight))
+# POSIX
+myPOSIX <- as.data.frame(within(weight, { myPOSIX=strptime(paste(Date,Time), "%Y/%m/%d%H:%M:%S") }))
+df <- cbind(myPOSIX$myPOSIX,weight)
+df <- df[,c("myPOSIX$myPOSIX","Weight")]
+
+```
+
+# get BP Pressure data
+```{r}
+pressure <- read.csv( "~/WORKSHOP/BP/DATA/pressure.csv",sep="",header=FALSE)
+pressure <- unfactor(pressure)
+Date <- pressure[,1]
+Time <- pressure[,2]
+
+SYS <- pressure[,3]
+DIA <- pressure[,4]
+PULSE <- pressure[,5]
+# POSIX
+datetime <- paste(Date,Time)
+myPOSIX <- as.POSIXct(datetime)
+
+df2 <- cbind(myPOSIX,pressure[,c(-1,-2)])
+colnames(df2) <- c("myPOSIX","SYS","DIA","Pulse")
+```
+
+# Plots
+```{r}
+par(mfrow=c(3,2))
+plot(df,xlab="Date",ylab="Weight [kg]")
+abline(h=100,col=2,lwd=3)
+plot(df2$myPOSIX,df2$SYS,xlab="Year",ylab="Systolic [mm Hg]")
+abline(h=median(df2$SYS),col=2,lwd=3)
+plot(df2$myPOSIX,df2$DIA,xlab="Year",ylab="Diastolic [mm Hg]")
+abline(h=median(df2$DIA),col=2,lwd=3)
+plot(df2$myPOSIX,df2$Pulse,xlab="Year",ylab="Pulse [bpm]")
+#
+plot(df2$Pulse,df2$SYS,xlab="Pulse",ylab="Systolic",pch=19,cex=0.2)
+rlmfit <- rlm(df2$SYS ~ df2$Pulse)
+abline(rlmfit,col=2,lwd=3)
+plot(month(df2$myPOSIX),df2$SYS,xlab="Month",ylab="Systolic [mm Hg]",pch=19,cex=0.2)
+#
+plot(hour(df2$myPOSIX),df2$SYS,xlab="Hour",ylab="Systolic [mm Hg]",pch=19,cex=0.2)
+# write
+idx <- which(year(df2$myPOSIX) < 2020)
+saveRDS(cbind(hour(df2$myPOSIX),df2$SYS),file="BP_hours_before_2020.rds")
+idx <- which(year(df2$myPOSIX) == 2020)
+saveRDS(cbind(hour(df2$myPOSIX[idx]),df2$SYS[idx]),file="BP_hours_2020.rds")
+```
+
+# Model
+```{r}
+rlm1 <- rlm(df2$SYS ~ df2$DIA+df2$Pulse )
+ 
+summary(rlm1)
+rlm2 <- rlm(df2$SYS ~ df2$DIA+df2$Pulse+hour(df2$myPOSIX) )
+ 
+summary(rlm2)
+#
+gam1 <- gam(df2$SYS ~ df2$DIA+df2$Pulse+hour(df2$myPOSIX) )
+summary(gam1)
+ 
+```
+
+# Spectra
+```{r}
+JD <- julianDay(df2$myPOSIX, year = year(df2$myPOSIX), month = month(df2$myPOSIX), day = day(df2$myPOSIX), hour = hour(df2$myPOSIX), min = minute(df2$myPOSIX), sec = 0, tz = "UTC")
+lsp(df2$SYS,times=JD)
+lsp(df2$DIA,times=JD)
+lsp(df2$Pulse,times=JD)
+```
+# Plot a whisker plot of SYS
+```{r}
+library(ggplot2)
+library(dplyr)
+df <- as.data.frame(readRDS("BP_hours_before_2020.rds"))
+
+colnames(df) <- c("Hour","SYS")
+df$Hour <- factor(df$Hour, levels=1:24)
+p <- ggplot(df, aes(Hour, SYS),title="all data")
+p + geom_boxplot() + geom_hline(yintercept = 137,col=2,lwd=1)
+pdf(file="FIGURES/BP_whiskers.pdf")
+p <- ggplot(df, aes(Hour, SYS),title="all data")
+p + geom_boxplot() + geom_hline(yintercept = 137,col=2,lwd=1)
+dev.off()
+```
+
+
+ 

@@ -1,0 +1,2 @@
+sed 's/,/ /g' bp.csv | awk '{print $1,$2,$3,$4,$5}' | sed 's/:/ /g' | sed 's/-/ /g' > data.dat
+idl go_plot.pro

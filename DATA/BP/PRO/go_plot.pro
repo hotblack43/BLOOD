@@ -1,0 +1,2 @@
+.r plotter.pro
+exit

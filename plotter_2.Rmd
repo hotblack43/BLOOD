@@ -1,0 +1,236 @@
+---
+title: "Plot Weight and Blood-pressure"
+output: 
+  pdf_document: 
+    fig_height: 9
+---
+
+# Setups
+```{r}
+rm(list=ls())
+library(readxl)
+library(varhandle)
+library(lubridate)
+library(MASS)
+library(gam)
+library(lomb) 
+library(extRemes)
+library(readr)
+library(ggplot2)
+library(dplyr)
+library(oce)
+library(forecast)
+
+setwd("~/WORKSHOP/BP/")
+```
+
+# Notes
+May have to first convert the xls files to csv with e.g. "ssconvert pressure.xls pressure.csv"
+
+# get Weight data from .xlsx
+```{r}
+ 
+# read xls
+weight <- read_excel("DATA/weight.xls")
+
+weight <- unfactor(weight)
+Date <- weight[,1]
+Time <- weight[,2]
+
+mass <- weight[,3]
+# POSIX
+datetime <- paste(t(Date),t(Time))  
+myPOSIX <- as.POSIXct(datetime)
+frac.year <- year(datetime)+(month(datetime)-1)/12.+day(datetime)/365.25+hour(datetime)/24.0/365.25
+df <- cbind(myPOSIX,mass)
+colnames(df) <- c("myPOSIX","Weight")
+```
+
+# get Weight data from .csv
+```{r}
+# read csv
+weight <- read.csv2("DATA/weight.csv",sep="",header=TRUE,fileEncoding = "UCS-2LE")
+weight <- weight[,-c(4:17)]
+#weight <- unfactor(weight)
+Date <- weight[,1]
+Time <- weight[,2]
+mass <- weight[,3]
+# POSIX
+datetime <- paste(Date,Time)  
+myPOSIX <- as.POSIXct(datetime)
+frac.year <- year(datetime)+(month(datetime)-1)/12.+day(datetime)/365.25+hour(datetime)/24.0/365.25
+df <- cbind.data.frame(myPOSIX,mass)
+colnames(df) <- c("myPOSIX","Weight")
+df$Weight <- as.numeric(df$Weight)
+#
+plot(df$myPOSIX,df$Weight,pch=19,cex=0.3,ylim=c(89,103),main="Mass evolution of Peter Thejll")
+abline(h=90,col=2,lwd=4)
+abline(v=as.POSIXct(("2019-09-05")))
+abline(v=as.POSIXct(("2020-09-05")))
+abline(v=as.POSIXct(("2021-09-05")))
+```
+
+# get BP Pressure data from .xlsx
+```{r}
+pressure <- read_excel("DATA/BP.xlsx")
+
+pressure <- unfactor(pressure)
+Date <- pressure[,1]
+Time <- pressure[,2]
+
+SYS <- pressure[,3]
+DIA <- pressure[,4]
+PULSE <- pressure[,5]
+# POSIX
+datetime <- paste(t(Date),t(Time))  
+myPOSIX <- as.POSIXct(datetime)
+
+df2 <- cbind(myPOSIX,pressure[,c(-1,-2)])
+colnames(df2) <- c("myPOSIX","SYS","DIA","Pulse")
+
+```
+ 
+
+# get BP Pressure data from .csv
+```{r}
+pressure <- read.csv("DATA/HealthManagerApp_DataExport.csv",skip=16,sep=";")
+
+pressure <- unfactor(pressure)
+Date <- pressure[,1]
+Time <- pressure[,2]
+
+SYS <- pressure[,3]
+DIA <- pressure[,4]
+PULSE <- pressure[,5]
+# POSIX
+datetime <- paste(t(Date),t(Time))  
+myPOSIX <- as.POSIXct(datetime)
+
+df2 <- cbind(myPOSIX,pressure)
+df2 <- df2[,c(1,4,5,6)]
+colnames(df2) <- c("myPOSIX","SYS","DIA","Pulse")
+# and colate with older data
+older <- read.csv("DATA/pressure.csv",sep="")
+colnames(older) <- c("Date","Time","SYS","DIA","Pulse")
+Date <- older[,1]
+Time <- older[,2]
+# POSIX
+datetime <- paste(t(Date),t(Time))  
+myPOSIX_older <- as.POSIXct(datetime)
+df2_older <- cbind(myPOSIX_older,older[,-c(1,2)])
+colnames(df2_older)[1] <- "myPOSIX" 
+# join
+df2 <- rbind(df2,df2_older)
+```
+
+# Plot weight
+```{r}
+
+```
+
+
+
+
+
+
+# Plot BP
+```{r}
+par(mfrow=c(3,2))
+plot(df,xlab="Date",ylab="Weight [kg]",pch=19,cex=0.2)
+fit.lm <- rlm(df$Weight ~ df$myPOSIX)
+lines(df$myPOSIX,fit.lm$fitted.values,col=2,lwd=4)
+plot(df2$myPOSIX,df2$SYS,xlab="Year",ylab="Systolic [mm Hg]",pch=19,cex=0.2)
+abline(h=median(df2$SYS),col=2,lwd=3)
+plot(df2$myPOSIX,df2$DIA,xlab="Year",ylab="Diastolic [mm Hg]",pch=19,cex=0.2)
+abline(h=median(df2$DIA),col=2,lwd=3)
+plot(df2$myPOSIX,df2$Pulse,xlab="Year",ylab="Pulse [bpm]",pch=19,cex=0.2)
+#
+plot(df2$Pulse,df2$SYS,xlab="Pulse",ylab="Systolic",pch=19,cex=0.2)
+rlmfit <- rlm(df2$SYS ~ df2$Pulse)
+abline(rlmfit,col=2,lwd=3)
+plot(month(df2$myPOSIX),df2$SYS,xlab="Month",ylab="Systolic [mm Hg]",pch=19,cex=0.2)
+#
+plot(hour(df2$myPOSIX),df2$SYS,xlab="Hour",ylab="Systolic [mm Hg]",pch=19,cex=0.2)
+# write
+idx <- which(year(df2$myPOSIX) < 2020)
+saveRDS(cbind(hour(df2$myPOSIX),df2$SYS),file="OUTPUT/BP_hours_before_2020.rds")
+idx <- which(year(df2$myPOSIX) == 2020)
+saveRDS(cbind(hour(df2$myPOSIX[idx]),df2$SYS[idx]),file="OUTPUT/BP_hours_2020.rds")
+```
+
+# Model
+```{r}
+rlm1 <- rlm(df2$SYS ~ df2$DIA+df2$Pulse )
+ 
+summary(rlm1)
+rlm2 <- rlm(df2$SYS ~ df2$DIA+df2$Pulse+hour(df2$myPOSIX) )
+ 
+summary(rlm2)
+#
+gam1 <- gam(df2$SYS ~ df2$DIA+df2$Pulse+hour(df2$myPOSIX) )
+summary(gam1)
+ 
+```
+
+# Spectra
+```{r}
+par(mfrow=c(3,1))
+JD <- julianDay(df2$myPOSIX, year = year(df2$myPOSIX), month = month(df2$myPOSIX), day = day(df2$myPOSIX), hour = hour(df2$myPOSIX), min = minute(df2$myPOSIX), sec = 0, tz = "UTC")
+lsp(df2$SYS,times=JD,type="period",ylab="SYS power",xlab="Period [days]")
+abline(v=7,col=2,lwd=3)
+lsp(df2$DIA,times=JD,type="period",ylab="DIA power",xlab="Period [days]")
+abline(v=7,col=2,lwd=3)
+lsp(df2$Pulse,times=JD,type="period",ylab="Pulse power",xlab="Period [days]")
+abline(v=7,col=2,lwd=3)
+```
+# Plot a whisker plot of SYS
+```{r}
+
+df3 <- as.data.frame(readRDS("OUTPUT/BP_hours_before_2020.rds"))
+
+colnames(df3) <- c("Hour","SYS")
+df3$Hour <- factor(df3$Hour, levels=1:24)
+p <- ggplot(df3, aes(Hour, SYS),title="all data")
+p + geom_boxplot() + geom_hline(yintercept = 137,col=2,lwd=1)
+pdf(file="FIGURES/BP_whiskers.pdf")
+p <- ggplot(df3, aes(Hour, SYS),title="all data")
+p + geom_boxplot() + geom_hline(yintercept = 137,col=2,lwd=1)
+dev.off()
+```
+# forecast BP
+```{r}
+fit.arima <- auto.arima(df2$SYS)
+fit.arima
+fc.SYS <- forecast(fit.arima,h=100)
+plot(fc.SYS,ylab="SYS [mm Hg]",xlab="step")
+grid(nx=NULL, ny=NULL, col= "blue", lty="dotted", equilogs=FALSE)
+# rlm
+fit.lm <- rlm(df2$SYS ~ df2$myPOSIX)
+plot(df2$myPOSIX,df2$SYS)
+lines(df2$myPOSIX,fit.lm$fitted.values,col=2,lwd=4)
+grid(nx=NULL, ny=NULL, col= "blue", lty="dotted", equilogs=FALSE)
+```
+# forecast weight
+```{r}
+fit.arima <- auto.arima(df2$SYS)
+fit.arima
+fc.SYS <- forecast(fit.arima,h=100)
+plot(fc.SYS,ylab="SYS [mm Hg]",xlab="step")
+grid(nx=NULL, ny=NULL, col= "blue", lty="dotted", equilogs=FALSE)
+# rlm
+fit.lm <- rlm(df2$SYS ~ df2$myPOSIX)
+plot(df2$myPOSIX,df2$SYS)
+lines(df2$myPOSIX,fit.lm$fitted.values,col=2,lwd=4)
+grid(nx=NULL, ny=NULL, col= "blue", lty="dotted", equilogs=FALSE)
+```
+# Weight
+```{r}
+plot(frac.year,df$Weight,xlab="Date",ylab="Weight [kg]",pch=19,cex=0.2)
+fit.lm <- rlm(df$Weight ~ df$myPOSIX)
+s <- summary(fit.lm)
+lines(frac.year,fit.lm$fitted.values,col=2,lwd=4)
+print(c("Mass change rate : ",round(fit.lm$coefficients[2]*365.25*24*3600,3)," kg/year"))
+
+```
+
+ 

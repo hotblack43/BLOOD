@@ -1,0 +1,47 @@
+---
+title: "Gather and plot old Weight CSV files"
+output: html_notebook
+---
+
+
+
+```{r}
+rm(list=ls())
+setwd("~/WORKSHOP/BP/")
+files <- c("DATA/weight_olderrr.csv","DATA/weight.csv","DATA/Weight_older.csv","DATA/weight.dat","DATA/weight_may_2022.csv")
+           
+```
+
+# Get data individually
+```{r}
+df <- read.csv("DATA/weight_olderrr.csv")
+dummy <- read.csv("DATA/weight.csv",sep="")[,c(1,2,3)]
+df <- rbind(df,dummy)
+dummy <- read.csv("DATA/Weight_older.csv")
+df <- rbind(df,dummy)
+dummy <- read.csv("DATA/weight_may_2022.csv",sep="")[,c(1,2,3)]
+df <- rbind(df,dummy)
+df$DateTime <- as.POSIXct(paste(df$Date, df$Time))
+df$POSIX <- as.POSIXct(df$DateTime)
+# and the different one ..
+dummy <- read.csv("DATA/weight.dat",sep="")
+dummy$POSIX <- ISOdatetime(year=dummy$yyyy,month=dummy$mo,day=dummy$dd,hour=dummy$hh,min=dummy$mi,sec=0,tz="CET")
+colnames(dummy)[6] <- "Weight"
+df <- rbind(df[,c(3,5)],dummy[,c(6,7)])
+idx <- order(df$POSIX)
+df <- df[idx,]
+# get rid of duplicates
+df <- unique(df)
+```
+
+# Plot
+```{r}
+plot(df$POSIX,df$Weight,pch=19,cex=0.3,ylab="Mass",main="Dad's weight over time")
+abline(h=100,col=2,lwd=3)
+png("FIGURES/weight.png")
+plot(df$POSIX,df$Weight,pch=19,cex=0.3,ylab="Mass",main="Dad's weight over time")
+abline(h=100,col=2,lwd=3)
+dev.off()
+```
+
+
