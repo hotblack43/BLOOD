@@ -1,0 +1,87 @@
+---
+title: "Testing Bllod Pressure"
+output: pdf_document
+---
+
+
+## Setup
+
+```{r}
+library(lubridate)
+library(fBasics)
+```
+
+
+## Get my BP readings
+```{r}
+data <- read.csv("bp3.csv",header=T,sep="",fileEncoding = "UCS-2LE")
+colnames(data) <- c("Year","Month","Day","Hour","Minute","Sys","Dia","Pulse")
+POSIXtime = ISOdatetime(year=data$Year, month=data$Month, day=data$Day, hour = data$Hour, min = data$Minute, sec = 0, tz = "UTC") # on the hour
+jd <- julian(POSIXtime)
+local_df <- cbind(data,POSIXtime,jd)
+```
+
+## Plot the Systolic readings and show the time-limits of the test
+
+```{r}
+plot(local_df$jd,local_df$Sys,pch=19,xlab="Days",ylab="Sys [mm Hg]",main="Testing effect of 2 vs 3 pills")
+lim1 <- 18055.0
+lim2 <- 18075.0
+abline(v=lim1,col="red")
+abline(v=lim2,col="red")
+
+plot(local_df$jd,local_df$Dia,pch=19,xlab="Days",ylab="Dia [mm Hg]",main="Testing effect of 2 vs 3 pills")
+lim1 <- 18055.0
+lim2 <- 18075.0
+abline(v=lim1,col="red")
+abline(v=lim2,col="red")
+
+plot(local_df$jd,local_df$Pulse,pch=19,xlab="Days",ylab="Pulse [bpm]",main="Testing effect of 2 vs 3 pills")
+lim1 <- 18055.0
+lim2 <- 18075.0
+abline(v=lim1,col="red")
+abline(v=lim2,col="red")
+
+```
+
+## Define the two samples to test with KS2
+
+```{r}
+# Define sample with all medicine
+idx <- which(local_df$jd < lim1 | local_df$jd > lim2)
+# Define sampel with only towmedicines
+jdx <- which(local_df$jd > lim1 & local_df$jd < lim2)
+
+# Test on Sys
+var1totest <- local_df$Sys[idx]
+var2totest <- local_df$Sys[jdx]
+ks2 <- ks2Test(var1totest,var2totest)
+ks2
+
+# Test on Dia
+var1totest <- local_df$Dia[idx]
+var2totest <- local_df$Dia[jdx]
+ks2 <- ks2Test(var1totest,var2totest)
+ks2
+
+# Test on Pulse
+var1totest <- local_df$Pulse[idx]
+var2totest <- local_df$Pulse[jdx]
+ks2 <- ks2Test(var1totest,var2totest)
+ks2
+```
+
+
+## Example so that we can understand the D and p value above
+```{r}
+## rnorm - 
+   # Generate Series drawn from different populations:
+   x = rnorm(34)
+   y = rnorm(76)+1.2
+  
+## ks2Test - 
+   ks2Test(x, y)
+```
+
+
+

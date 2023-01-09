@@ -1,0 +1,426 @@
+\documentclass[]{article}
+\usepackage{lmodern}
+\usepackage{amssymb,amsmath}
+\usepackage{ifxetex,ifluatex}
+\usepackage{fixltx2e} % provides \textsubscript
+\ifnum 0\ifxetex 1\fi\ifluatex 1\fi=0 % if pdftex
+  \usepackage[T1]{fontenc}
+  \usepackage[utf8]{inputenc}
+\else % if luatex or xelatex
+  \ifxetex
+    \usepackage{mathspec}
+  \else
+    \usepackage{fontspec}
+  \fi
+  \defaultfontfeatures{Ligatures=TeX,Scale=MatchLowercase}
+\fi
+% use upquote if available, for straight quotes in verbatim environments
+\IfFileExists{upquote.sty}{\usepackage{upquote}}{}
+% use microtype if available
+\IfFileExists{microtype.sty}{%
+\usepackage{microtype}
+\UseMicrotypeSet[protrusion]{basicmath} % disable protrusion for tt fonts
+}{}
+\usepackage[margin=1in]{geometry}
+\usepackage{hyperref}
+\hypersetup{unicode=true,
+            pdftitle={Testing Bllod Pressure},
+            pdfborder={0 0 0},
+            breaklinks=true}
+\urlstyle{same}  % don't use monospace font for urls
+\usepackage{color}
+\usepackage{fancyvrb}
+\newcommand{\VerbBar}{|}
+\newcommand{\VERB}{\Verb[commandchars=\\\{\}]}
+\DefineVerbatimEnvironment{Highlighting}{Verbatim}{commandchars=\\\{\}}
+% Add ',fontsize=\small' for more characters per line
+\usepackage{framed}
+\definecolor{shadecolor}{RGB}{248,248,248}
+\newenvironment{Shaded}{\begin{snugshade}}{\end{snugshade}}
+\newcommand{\AlertTok}[1]{\textcolor[rgb]{0.94,0.16,0.16}{#1}}
+\newcommand{\AnnotationTok}[1]{\textcolor[rgb]{0.56,0.35,0.01}{\textbf{\textit{#1}}}}
+\newcommand{\AttributeTok}[1]{\textcolor[rgb]{0.77,0.63,0.00}{#1}}
+\newcommand{\BaseNTok}[1]{\textcolor[rgb]{0.00,0.00,0.81}{#1}}
+\newcommand{\BuiltInTok}[1]{#1}
+\newcommand{\CharTok}[1]{\textcolor[rgb]{0.31,0.60,0.02}{#1}}
+\newcommand{\CommentTok}[1]{\textcolor[rgb]{0.56,0.35,0.01}{\textit{#1}}}
+\newcommand{\CommentVarTok}[1]{\textcolor[rgb]{0.56,0.35,0.01}{\textbf{\textit{#1}}}}
+\newcommand{\ConstantTok}[1]{\textcolor[rgb]{0.00,0.00,0.00}{#1}}
+\newcommand{\ControlFlowTok}[1]{\textcolor[rgb]{0.13,0.29,0.53}{\textbf{#1}}}
+\newcommand{\DataTypeTok}[1]{\textcolor[rgb]{0.13,0.29,0.53}{#1}}
+\newcommand{\DecValTok}[1]{\textcolor[rgb]{0.00,0.00,0.81}{#1}}
+\newcommand{\DocumentationTok}[1]{\textcolor[rgb]{0.56,0.35,0.01}{\textbf{\textit{#1}}}}
+\newcommand{\ErrorTok}[1]{\textcolor[rgb]{0.64,0.00,0.00}{\textbf{#1}}}
+\newcommand{\ExtensionTok}[1]{#1}
+\newcommand{\FloatTok}[1]{\textcolor[rgb]{0.00,0.00,0.81}{#1}}
+\newcommand{\FunctionTok}[1]{\textcolor[rgb]{0.00,0.00,0.00}{#1}}
+\newcommand{\ImportTok}[1]{#1}
+\newcommand{\InformationTok}[1]{\textcolor[rgb]{0.56,0.35,0.01}{\textbf{\textit{#1}}}}
+\newcommand{\KeywordTok}[1]{\textcolor[rgb]{0.13,0.29,0.53}{\textbf{#1}}}
+\newcommand{\NormalTok}[1]{#1}
+\newcommand{\OperatorTok}[1]{\textcolor[rgb]{0.81,0.36,0.00}{\textbf{#1}}}
+\newcommand{\OtherTok}[1]{\textcolor[rgb]{0.56,0.35,0.01}{#1}}
+\newcommand{\PreprocessorTok}[1]{\textcolor[rgb]{0.56,0.35,0.01}{\textit{#1}}}
+\newcommand{\RegionMarkerTok}[1]{#1}
+\newcommand{\SpecialCharTok}[1]{\textcolor[rgb]{0.00,0.00,0.00}{#1}}
+\newcommand{\SpecialStringTok}[1]{\textcolor[rgb]{0.31,0.60,0.02}{#1}}
+\newcommand{\StringTok}[1]{\textcolor[rgb]{0.31,0.60,0.02}{#1}}
+\newcommand{\VariableTok}[1]{\textcolor[rgb]{0.00,0.00,0.00}{#1}}
+\newcommand{\VerbatimStringTok}[1]{\textcolor[rgb]{0.31,0.60,0.02}{#1}}
+\newcommand{\WarningTok}[1]{\textcolor[rgb]{0.56,0.35,0.01}{\textbf{\textit{#1}}}}
+\usepackage{graphicx,grffile}
+\makeatletter
+\def\maxwidth{\ifdim\Gin@nat@width>\linewidth\linewidth\else\Gin@nat@width\fi}
+\def\maxheight{\ifdim\Gin@nat@height>\textheight\textheight\else\Gin@nat@height\fi}
+\makeatother
+% Scale images if necessary, so that they will not overflow the page
+% margins by default, and it is still possible to overwrite the defaults
+% using explicit options in \includegraphics[width, height, ...]{}
+\setkeys{Gin}{width=\maxwidth,height=\maxheight,keepaspectratio}
+\IfFileExists{parskip.sty}{%
+\usepackage{parskip}
+}{% else
+\setlength{\parindent}{0pt}
+\setlength{\parskip}{6pt plus 2pt minus 1pt}
+}
+\setlength{\emergencystretch}{3em}  % prevent overfull lines
+\providecommand{\tightlist}{%
+  \setlength{\itemsep}{0pt}\setlength{\parskip}{0pt}}
+\setcounter{secnumdepth}{0}
+% Redefines (sub)paragraphs to behave more like sections
+\ifx\paragraph\undefined\else
+\let\oldparagraph\paragraph
+\renewcommand{\paragraph}[1]{\oldparagraph{#1}\mbox{}}
+\fi
+\ifx\subparagraph\undefined\else
+\let\oldsubparagraph\subparagraph
+\renewcommand{\subparagraph}[1]{\oldsubparagraph{#1}\mbox{}}
+\fi
+
+%%% Use protect on footnotes to avoid problems with footnotes in titles
+\let\rmarkdownfootnote\footnote%
+\def\footnote{\protect\rmarkdownfootnote}
+
+%%% Change title format to be more compact
+\usepackage{titling}
+
+% Create subtitle command for use in maketitle
+\providecommand{\subtitle}[1]{
+  \posttitle{
+    \begin{center}\large#1\end{center}
+    }
+}
+
+\setlength{\droptitle}{-2em}
+
+  \title{Testing Bllod Pressure}
+    \pretitle{\vspace{\droptitle}\centering\huge}
+  \posttitle{\par}
+    \author{}
+    \preauthor{}\postauthor{}
+    \date{}
+    \predate{}\postdate{}
+  
+
+\begin{document}
+\maketitle
+
+\hypertarget{setup}{%
+\subsection{Setup}\label{setup}}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\KeywordTok{library}\NormalTok{(lubridate)}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+## 
+## Attaching package: 'lubridate'
+\end{verbatim}
+
+\begin{verbatim}
+## The following object is masked from 'package:base':
+## 
+##     date
+\end{verbatim}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\KeywordTok{library}\NormalTok{(fBasics)}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+## Loading required package: timeDate
+\end{verbatim}
+
+\begin{verbatim}
+## Loading required package: timeSeries
+\end{verbatim}
+
+\hypertarget{get-my-bp-readings}{%
+\subsection{Get my BP readings}\label{get-my-bp-readings}}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{data <-}\StringTok{ }\KeywordTok{read.csv}\NormalTok{(}\StringTok{"bp3.csv"}\NormalTok{,}\DataTypeTok{header=}\NormalTok{T,}\DataTypeTok{sep=}\StringTok{""}\NormalTok{,}\DataTypeTok{fileEncoding =} \StringTok{"UCS-2LE"}\NormalTok{)}
+\KeywordTok{colnames}\NormalTok{(data) <-}\StringTok{ }\KeywordTok{c}\NormalTok{(}\StringTok{"Year"}\NormalTok{,}\StringTok{"Month"}\NormalTok{,}\StringTok{"Day"}\NormalTok{,}\StringTok{"Hour"}\NormalTok{,}\StringTok{"Minute"}\NormalTok{,}\StringTok{"Sys"}\NormalTok{,}\StringTok{"Dia"}\NormalTok{,}\StringTok{"Pulse"}\NormalTok{)}
+\NormalTok{POSIXtime =}\StringTok{ }\KeywordTok{ISOdatetime}\NormalTok{(}\DataTypeTok{year=}\NormalTok{data}\OperatorTok{$}\NormalTok{Year, }\DataTypeTok{month=}\NormalTok{data}\OperatorTok{$}\NormalTok{Month, }\DataTypeTok{day=}\NormalTok{data}\OperatorTok{$}\NormalTok{Day, }\DataTypeTok{hour =}\NormalTok{ data}\OperatorTok{$}\NormalTok{Hour, }\DataTypeTok{min =}\NormalTok{ data}\OperatorTok{$}\NormalTok{Minute, }\DataTypeTok{sec =} \DecValTok{0}\NormalTok{, }\DataTypeTok{tz =} \StringTok{"UTC"}\NormalTok{) }\CommentTok{# on the hour}
+\NormalTok{jd <-}\StringTok{ }\KeywordTok{julian}\NormalTok{(POSIXtime)}
+\NormalTok{local_df <-}\StringTok{ }\KeywordTok{cbind}\NormalTok{(data,POSIXtime,jd)}
+\end{Highlighting}
+\end{Shaded}
+
+\hypertarget{plot-the-systolic-readings-and-show-the-time-limits-of-the-test}{%
+\subsection{Plot the Systolic readings and show the time-limits of the
+test}\label{plot-the-systolic-readings-and-show-the-time-limits-of-the-test}}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\KeywordTok{plot}\NormalTok{(local_df}\OperatorTok{$}\NormalTok{jd,local_df}\OperatorTok{$}\NormalTok{Sys,}\DataTypeTok{pch=}\DecValTok{19}\NormalTok{,}\DataTypeTok{xlab=}\StringTok{"Days"}\NormalTok{,}\DataTypeTok{ylab=}\StringTok{"Sys [mm Hg]"}\NormalTok{,}\DataTypeTok{main=}\StringTok{"Testing effect of 2 vs 3 pills"}\NormalTok{)}
+\NormalTok{lim1 <-}\StringTok{ }\FloatTok{18055.0}
+\NormalTok{lim2 <-}\StringTok{ }\FloatTok{18075.0}
+\KeywordTok{abline}\NormalTok{(}\DataTypeTok{v=}\NormalTok{lim1,}\DataTypeTok{col=}\StringTok{"red"}\NormalTok{)}
+\KeywordTok{abline}\NormalTok{(}\DataTypeTok{v=}\NormalTok{lim2,}\DataTypeTok{col=}\StringTok{"red"}\NormalTok{)}
+\end{Highlighting}
+\end{Shaded}
+
+\includegraphics{bp_tester_1_files/figure-latex/unnamed-chunk-3-1.pdf}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\KeywordTok{plot}\NormalTok{(local_df}\OperatorTok{$}\NormalTok{jd,local_df}\OperatorTok{$}\NormalTok{Dia,}\DataTypeTok{pch=}\DecValTok{19}\NormalTok{,}\DataTypeTok{xlab=}\StringTok{"Days"}\NormalTok{,}\DataTypeTok{ylab=}\StringTok{"Dia [mm Hg]"}\NormalTok{,}\DataTypeTok{main=}\StringTok{"Testing effect of 2 vs 3 pills"}\NormalTok{)}
+\NormalTok{lim1 <-}\StringTok{ }\FloatTok{18055.0}
+\NormalTok{lim2 <-}\StringTok{ }\FloatTok{18075.0}
+\KeywordTok{abline}\NormalTok{(}\DataTypeTok{v=}\NormalTok{lim1,}\DataTypeTok{col=}\StringTok{"red"}\NormalTok{)}
+\KeywordTok{abline}\NormalTok{(}\DataTypeTok{v=}\NormalTok{lim2,}\DataTypeTok{col=}\StringTok{"red"}\NormalTok{)}
+\end{Highlighting}
+\end{Shaded}
+
+\includegraphics{bp_tester_1_files/figure-latex/unnamed-chunk-3-2.pdf}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\KeywordTok{plot}\NormalTok{(local_df}\OperatorTok{$}\NormalTok{jd,local_df}\OperatorTok{$}\NormalTok{Pulse,}\DataTypeTok{pch=}\DecValTok{19}\NormalTok{,}\DataTypeTok{xlab=}\StringTok{"Days"}\NormalTok{,}\DataTypeTok{ylab=}\StringTok{"Pulse [bpm]"}\NormalTok{,}\DataTypeTok{main=}\StringTok{"Testing effect of 2 vs 3 pills"}\NormalTok{)}
+\NormalTok{lim1 <-}\StringTok{ }\FloatTok{18055.0}
+\NormalTok{lim2 <-}\StringTok{ }\FloatTok{18075.0}
+\KeywordTok{abline}\NormalTok{(}\DataTypeTok{v=}\NormalTok{lim1,}\DataTypeTok{col=}\StringTok{"red"}\NormalTok{)}
+\KeywordTok{abline}\NormalTok{(}\DataTypeTok{v=}\NormalTok{lim2,}\DataTypeTok{col=}\StringTok{"red"}\NormalTok{)}
+\end{Highlighting}
+\end{Shaded}
+
+\includegraphics{bp_tester_1_files/figure-latex/unnamed-chunk-3-3.pdf}
+
+\hypertarget{define-the-two-samples-to-test-with-ks2}{%
+\subsection{Define the two samples to test with
+KS2}\label{define-the-two-samples-to-test-with-ks2}}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\CommentTok{# Define sample with all medicine}
+\NormalTok{idx <-}\StringTok{ }\KeywordTok{which}\NormalTok{(local_df}\OperatorTok{$}\NormalTok{jd }\OperatorTok{<}\StringTok{ }\NormalTok{lim1 }\OperatorTok{|}\StringTok{ }\NormalTok{local_df}\OperatorTok{$}\NormalTok{jd }\OperatorTok{>}\StringTok{ }\NormalTok{lim2)}
+\CommentTok{# Define sampel with only towmedicines}
+\NormalTok{jdx <-}\StringTok{ }\KeywordTok{which}\NormalTok{(local_df}\OperatorTok{$}\NormalTok{jd }\OperatorTok{>}\StringTok{ }\NormalTok{lim1 }\OperatorTok{&}\StringTok{ }\NormalTok{local_df}\OperatorTok{$}\NormalTok{jd }\OperatorTok{<}\StringTok{ }\NormalTok{lim2)}
+
+\CommentTok{# Test on Sys}
+\NormalTok{var1totest <-}\StringTok{ }\NormalTok{local_df}\OperatorTok{$}\NormalTok{Sys[idx]}
+\NormalTok{var2totest <-}\StringTok{ }\NormalTok{local_df}\OperatorTok{$}\NormalTok{Sys[jdx]}
+\NormalTok{ks2 <-}\StringTok{ }\KeywordTok{ks2Test}\NormalTok{(var1totest,var2totest)}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+## Warning in ks.test(x = x, y = y, alternative = "two.sided"): cannot compute
+## exact p-value with ties
+\end{verbatim}
+
+\begin{verbatim}
+## Warning in ks.test(x = x, y = y, exact = TRUE, alternative = "two.sided"):
+## cannot compute exact p-value with ties
+\end{verbatim}
+
+\begin{verbatim}
+## Warning in ks.test(x = x, y = y, alternative = "less"): cannot compute
+## exact p-value with ties
+\end{verbatim}
+
+\begin{verbatim}
+## Warning in ks.test(x = x, y = y, alternative = "greater"): cannot compute
+## exact p-value with ties
+\end{verbatim}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{ks2}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+## 
+## Title:
+##  Kolmogorov-Smirnov Two Sample Test
+## 
+## Test Results:
+##   STATISTIC:
+##     D | Two Sided: 0.3801
+##        D^- | Less: 0
+##     D^+ | Greater: 0.3801
+##   P VALUE:
+##     Alternative       Two-Sided: 0.0001136 
+##     Alternative Exact Two-Sided: 0.0001136 
+##     Alternative            Less: 1 
+##     Alternative         Greater: 5.678e-05 
+## 
+## Description:
+##  Fri Jul 12 08:50:12 2019
+\end{verbatim}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\CommentTok{# Test on Dia}
+\NormalTok{var1totest <-}\StringTok{ }\NormalTok{local_df}\OperatorTok{$}\NormalTok{Dia[idx]}
+\NormalTok{var2totest <-}\StringTok{ }\NormalTok{local_df}\OperatorTok{$}\NormalTok{Dia[jdx]}
+\NormalTok{ks2 <-}\StringTok{ }\KeywordTok{ks2Test}\NormalTok{(var1totest,var2totest)}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+## Warning in ks.test(x = x, y = y, alternative = "two.sided"): cannot compute
+## exact p-value with ties
+\end{verbatim}
+
+\begin{verbatim}
+## Warning in ks.test(x = x, y = y, exact = TRUE, alternative = "two.sided"):
+## cannot compute exact p-value with ties
+\end{verbatim}
+
+\begin{verbatim}
+## Warning in ks.test(x = x, y = y, alternative = "less"): cannot compute
+## exact p-value with ties
+\end{verbatim}
+
+\begin{verbatim}
+## Warning in ks.test(x = x, y = y, alternative = "greater"): cannot compute
+## exact p-value with ties
+\end{verbatim}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{ks2}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+## 
+## Title:
+##  Kolmogorov-Smirnov Two Sample Test
+## 
+## Test Results:
+##   STATISTIC:
+##     D | Two Sided: 0.3328
+##        D^- | Less: 0.0099
+##     D^+ | Greater: 0.3328
+##   P VALUE:
+##     Alternative       Two-Sided: 0.001109 
+##     Alternative Exact Two-Sided: 0.001109 
+##     Alternative            Less: 0.9934 
+##     Alternative         Greater: 0.0005546 
+## 
+## Description:
+##  Fri Jul 12 08:50:12 2019
+\end{verbatim}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\CommentTok{# Test on Pulse}
+\NormalTok{var1totest <-}\StringTok{ }\NormalTok{local_df}\OperatorTok{$}\NormalTok{Pulse[idx]}
+\NormalTok{var2totest <-}\StringTok{ }\NormalTok{local_df}\OperatorTok{$}\NormalTok{Pulse[jdx]}
+\NormalTok{ks2 <-}\StringTok{ }\KeywordTok{ks2Test}\NormalTok{(var1totest,var2totest)}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+## Warning in ks.test(x = x, y = y, alternative = "two.sided"): cannot compute
+## exact p-value with ties
+\end{verbatim}
+
+\begin{verbatim}
+## Warning in ks.test(x = x, y = y, exact = TRUE, alternative = "two.sided"):
+## cannot compute exact p-value with ties
+\end{verbatim}
+
+\begin{verbatim}
+## Warning in ks.test(x = x, y = y, alternative = "less"): cannot compute
+## exact p-value with ties
+\end{verbatim}
+
+\begin{verbatim}
+## Warning in ks.test(x = x, y = y, alternative = "greater"): cannot compute
+## exact p-value with ties
+\end{verbatim}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{ks2}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+## 
+## Title:
+##  Kolmogorov-Smirnov Two Sample Test
+## 
+## Test Results:
+##   STATISTIC:
+##     D | Two Sided: 0.4914
+##        D^- | Less: 0.4914
+##     D^+ | Greater: 0
+##   P VALUE:
+##     Alternative       Two-Sided: 1.601e-07 
+##     Alternative Exact Two-Sided: 1.601e-07 
+##     Alternative            Less: 8.003e-08 
+##     Alternative         Greater: 1 
+## 
+## Description:
+##  Fri Jul 12 08:50:12 2019
+\end{verbatim}
+
+\hypertarget{example-so-that-we-can-understand-the-d-and-p-value-above}{%
+\subsection{Example so that we can understand the D and p value
+above}\label{example-so-that-we-can-understand-the-d-and-p-value-above}}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\CommentTok{## rnorm - }
+   \CommentTok{# Generate Series drawn from different populations:}
+\NormalTok{   x =}\StringTok{ }\KeywordTok{rnorm}\NormalTok{(}\DecValTok{34}\NormalTok{)}
+\NormalTok{   y =}\StringTok{ }\KeywordTok{rnorm}\NormalTok{(}\DecValTok{76}\NormalTok{)}\OperatorTok{+}\FloatTok{1.2}
+  
+\CommentTok{## ks2Test - }
+   \KeywordTok{ks2Test}\NormalTok{(x, y)}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+## 
+## Title:
+##  Kolmogorov-Smirnov Two Sample Test
+## 
+## Test Results:
+##   STATISTIC:
+##     D | Two Sided: 0.5015
+##        D^- | Less: 0
+##     D^+ | Greater: 0.5015
+##   P VALUE:
+##     Alternative       Two-Sided: 6.285e-06 
+##     Alternative Exact Two-Sided: 6.285e-06 
+##     Alternative            Less: 1 
+##     Alternative         Greater: 7.369e-06 
+## 
+## Description:
+##  Fri Jul 12 08:50:12 2019
+\end{verbatim}
+
+
+\end{document}
